@@ -8,7 +8,7 @@ import {
   Alert,
   Pressable,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Asset } from "expo-asset";
 import { ScrollView } from "react-native";
 import Button from "../../components/common/Button.js";
@@ -20,12 +20,16 @@ import ExploreCard from "../../components/ExploreCard.js";
 import SuggestionCards from "../../components/common/SuggestionCard.js";
 import { SectionList } from "react-native-web";
 import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import LottieView from "lottie-react-native";
 
 const image = Asset.fromModule(require("../../assets/bg.png")).uri;
-const avatar = Asset.fromModule(require("../../assets/cgpic.jpg")).uri;
+const avatar = Asset.fromModule(require("../../assets/animation.gif")).uri;
 
 const index = () => {
   const router = useRouter();
+
+  const [user, setUser] = useState(null);
 
   const [suggestionPage, setSuggestionPage] = useState("science");
 
@@ -145,6 +149,23 @@ const index = () => {
     setSuggestionsList(scienceList);
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      await AsyncStorage.getItem("user").then((value) => {
+        if (value) {
+          console.log("====================================");
+          console.log(value);
+          console.log("====================================");
+          setUser(JSON.parse(value));
+        }
+      });
+    })();
+  }, []);
+
+  // useEffect(() => {
+  //   if (user === null) router.push("/login");
+  // }, []);
+
   return (
     <View className="flex-1">
       <ImageBackground
@@ -152,30 +173,48 @@ const index = () => {
         className="flex-1 bg-cover px-5 pt-10 relative"
       >
         <View>
-          <View className="flex-row items-center">
+          <View className="flex-row items-center justify-center">
             <Pressable
               onPress={() => {
                 router.push("/dashboard/editprofile");
               }}
-              className="h-24 w-24 rounded-full pb-1 mt-6"
+              className="flex-1 items-center justify-center"
             >
-              <Image
+              <LottieView
+                className="h-2024 w-20 aspect-square "
+                source={require("../../assets/lottie/chatbot.json")}
+                autoPlay={true}
+                // loop={true}
+              />
+              {/* <Image
                 source={{ uri: avatar }}
                 alt="avatar"
-                className="w-5/6 h-5/6 rounded-full"
-              />
+                className=""
+              /> */}
             </Pressable>
-            <View>
+            <View className="flex-1 items-center">
               <Text
                 style={{ fontFamily: "Mervale-Script" }}
-                className="text-white text-xl font-bold"
+                className="text-white text-lg font-bold"
               >
-                Good Day,
+                Welcome,
               </Text>
-              <Text className="text-white text-xl font-bold">Goodness</Text>
+              <Text className="text-white text-xl font-bold w-full">
+                {String(user?.fullName).split(" ")[0]}
+              </Text>
             </View>
             <View className="ml-28">
-              <IconFA size={22} name="search" color="#1F7793" />
+              <TouchableOpacity
+                onPress={() => {
+                  AsyncStorage.removeItem("user");
+                  AsyncStorage.removeItem("profileImage");
+                  router.push("/login");
+                }}
+                className="items-center"
+              >
+                <IconFA size={22} name="sign-out" color="#1F7793" />
+                <Text className="text-white text-xs">Log out</Text>
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -194,12 +233,29 @@ const index = () => {
                 <PopularCard
                   title="Proposals"
                   content="Original proposal on any path of choice"
+                  handlePress={() => {
+                    router.push({
+                      pathname: "/dashboard/newchat",
+                      params: {
+                        prompt: "Original proposal on any path of choice",
+                      },
+                    });
+                  }}
                 />
               </View>
               <View>
                 <PopularCard
                   title="Letter Writing"
                   content="Original Letter, formal or informal"
+                  handlePress={() => {
+                    router.push({
+                      pathname: "/dashboard/newchat",
+                      params: {
+                        prompt:
+                          "Write me a [type of letter (formal or informal)] letter to [name of recipient] about [letter subject]",
+                      },
+                    });
+                  }}
                 />
               </View>
               <View>
@@ -209,7 +265,9 @@ const index = () => {
                   handlePress={() => {
                     router.push({
                       pathname: "/dashboard/newchat",
-                      params: { prompt: suggestion.prompt },
+                      params: {
+                        prompt: "Original resume for any job of choice",
+                      },
                     });
                   }}
                 />

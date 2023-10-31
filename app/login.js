@@ -1,24 +1,24 @@
-import {
-  View,
-  Text,
-  ImageBackground,
-  TouchableOpacity,
-  TextInput,
-  Alert,
-  Pressable,
-} from "react-native";
+import { View, Text, ImageBackground, Alert, Pressable } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Asset } from "expo-asset";
 import { useRouter } from "expo-router";
 import InputText from "../components/common/InputText";
 import Button from "../components/common/Button.js";
 import IconFA from "react-native-vector-icons/FontAwesome5";
+import { login } from "../services/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const image = Asset.fromModule(require("../assets/bg.png")).uri;
 
 const terms = () => {
   const router = useRouter();
 
   const [termsCheck, setTermsCheck] = useState(false);
+
+  const [emptyFields, setEmptyFields] = useState(true);
+
+  const [loading, setLoading] = useState(false);
+
+  const [user, setUser] = useState(null);
 
   const [form, setForm] = useState({
     email: "",
@@ -28,6 +28,48 @@ const terms = () => {
   const handleChangeText = (name, text) => {
     setForm({ ...form, [name]: text });
   };
+
+  const handleLogin = async () => {
+    try {
+      setLoading(true);
+      if (form.profileImage === "") return;
+
+      const { data, error } = await login(form);
+
+      if (data) {
+        setLoading(false);
+
+        if (data.status === 401) {
+          Alert.alert(data.message);
+        }
+
+        if (data.user) {
+          await AsyncStorage.setItem("user", JSON.stringify(data.user));
+          setUser(data.user);
+          Alert.alert("Logged in successfully!");
+          router.push("/dashboard");
+        }
+      }
+
+      if (error) {
+        setLoading(false);
+        Alert.alert("error");
+      }
+    } catch (error) {
+      Alert.alert("Fatal error. Something went wrong!");
+      console.log("====================================");
+      console.log(error);
+      console.log("====================================");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {}, [user]);
+
+  useEffect(() => {
+    if (form.email !== "" && form.password !== "") setEmptyFields(false);
+  }, [form.email, form.password]);
 
   return (
     <View className="flex-1">
@@ -43,7 +85,7 @@ const terms = () => {
             Login To Continue
           </Text>
         </View>
-        <View className="mt-8 space-y-8">
+        <View className="mt-8 space-y-4">
           <View>
             <InputText
               inputMode="email"
@@ -78,15 +120,31 @@ const terms = () => {
           </View>
           <View>
             <Button
+              disabled={emptyFields}
+              loading={loading}
               text="LOGIN"
-              link="/dashboard"
-              textStyle="text-xl"
-              style="w-3/4 self-center"
+              handlePress={handleLogin}
+              style={`w-2/4 self-center ${
+                emptyFields === true ? "opacity-70" : ""
+              }`}
             />
           </View>
           <View>
-            <Text className="text-red-600 text-xl p-3 text-center">
+            <Text className="text-red-600 text-xl p-3 pb-0 text-center">
               Forgot password?
+            </Text>
+          </View>
+          <View className="flex-row space-x-1 self-center ">
+            <Text className="text-white font-medium text-lg text-center">
+              Don't have an account?
+            </Text>
+            <Text
+              onPress={() => {
+                router.push("/signup");
+              }}
+              className="text-white font-bold text-lg text-center"
+            >
+              Sign Up
             </Text>
           </View>
         </View>

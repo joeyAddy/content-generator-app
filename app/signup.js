@@ -1,12 +1,4 @@
-import {
-  View,
-  Text,
-  ImageBackground,
-  TouchableOpacity,
-  TextInput,
-  Alert,
-  Pressable,
-} from "react-native";
+import { View, Text, ImageBackground, Alert, Pressable } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Asset } from "expo-asset";
 import { useRouter } from "expo-router";
@@ -15,6 +7,8 @@ import Button from "../components/common/Button.js";
 import Icon from "react-native-vector-icons/Feather";
 import IconFA from "react-native-vector-icons/FontAwesome5";
 const image = Asset.fromModule(require("../assets/bg.png")).uri;
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { register } from "../services/auth";
 
 const signup = () => {
   const router = useRouter();
@@ -22,14 +16,45 @@ const signup = () => {
   const [termsCheck, setTermsCheck] = useState(false);
 
   const [form, setForm] = useState({
-    fullname: "",
+    fullName: "",
     email: "",
     password: "",
-    cpassword: "",
+    confirmPassword: "",
   });
 
   const handleChangeText = (name, text) => {
     setForm({ ...form, [name]: text });
+  };
+
+  const [loading, setLoading] = useState(false);
+
+  const handleSignup = async () => {
+    try {
+      setLoading(true);
+
+      const { data, error } = await register(form);
+
+      if (data) {
+        setLoading(false);
+        if (data.user) {
+          await AsyncStorage.setItem("user", JSON.stringify(data.user));
+          Alert.alert("Account created successfully!");
+          router.push("/dashboard");
+        }
+      }
+
+      if (error) {
+        setLoading(false);
+        Alert.alert("error");
+      }
+    } catch (error) {
+      Alert.alert("Fatal error. Something went wrong!");
+      console.log("====================================");
+      console.log(error);
+      console.log("====================================");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -41,17 +66,14 @@ const signup = () => {
           </Text>
           <Text></Text>
         </View>
-        <View className="items-center justify-center rounded-full h-24 w-24 p-3 self-center bg-gray-400 mb-10">
-          <Icon size={48} color="white" name="camera" />
-        </View>
         <View className="space-y-5">
           <View>
             <InputText
               inputMode="text"
               placeHolder="Full Name"
               handleChangeText={handleChangeText}
-              value={form.fullname}
-              name="fullname"
+              value={form.fullName}
+              name="fullName"
             />
           </View>
           <View>
@@ -79,8 +101,8 @@ const signup = () => {
               secureTextMode={true}
               placeHolder="Confirm Password"
               handleChangeText={handleChangeText}
-              value={form.cpassword}
-              name="cpassword"
+              value={form.confirmPassword}
+              name="confirmPassword"
             />
           </View>
         </View>
@@ -94,16 +116,17 @@ const signup = () => {
             >
               {termsCheck && <IconFA size={18} color="green" name="check" />}
             </Pressable>
-            <Text className="text-white text-[16rem]">
-              You agree to our terms of service
+            <Text className="text-white text-base">
+              You must agree to our terms of service
             </Text>
           </View>
         </View>
         <View>
           <Button
             disabled={!termsCheck}
+            loading={loading}
             text="SIGN UP"
-            link="/login"
+            handlePress={handleSignup}
             style={`w-2/4 self-center ${
               termsCheck === false ? "opacity-70" : ""
             }`}

@@ -1,10 +1,4 @@
-import {
-  View,
-  Text,
-  ImageBackground,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { View, Text, ImageBackground, TouchableOpacity } from "react-native";
 import { Asset } from "expo-asset";
 import { Image } from "react-native";
 import AI from "../assets/AI.png";

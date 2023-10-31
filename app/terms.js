@@ -1,11 +1,21 @@
 import { View, Text, ImageBackground, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { Asset } from "expo-asset";
 import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const image = Asset.fromModule(require("../assets/bg.png")).uri;
 
 const terms = () => {
   const router = useRouter();
+
+  useEffect(() => {
+    const user = AsyncStorage.getItem("user");
+    console.log("====================================");
+    console.log(user);
+    console.log("====================================");
+
+    if (user.fullName !== undefined) router.push("/dashboard");
+  }, []);
 
   return (
     <View className="flex-1">

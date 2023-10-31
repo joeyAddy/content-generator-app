@@ -85,7 +85,7 @@ const editprofile = () => {
         <View className="space-y-5">
           <View>
             <InputText
-              inputMode="fullname"
+              inputMode="text"
               placeHolder="Full Name"
               handleChangeText={handleChangeText}
               value={form.fullname}
@@ -103,7 +103,8 @@ const editprofile = () => {
           </View>
           <View>
             <InputText
-              inputMode="password"
+              inputMode="text"
+              secureTextMode={true}
               placeHolder="Password"
               handleChangeText={handleChangeText}
               value={form.password}
@@ -112,7 +113,8 @@ const editprofile = () => {
           </View>
           <View>
             <InputText
-              inputMode="password"
+              inputMode="text"
+              secureTextMode={true}
               placeHolder="Confirm Password"
               handleChangeText={handleChangeText}
               value={form.cpassword}
@@ -122,11 +124,7 @@ const editprofile = () => {
         </View>
         <View></View>
         <View className="mt-10">
-          <Button
-            text="SAVE"
-            link="/dashboard"
-            style={`w-1/3 self-center $`}
-          />
+          <Button text="SAVE" link="/dashboard" style={`w-1/3 self-center $`} />
         </View>
       </ImageBackground>
     </View>

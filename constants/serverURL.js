@@ -1,1 +1,2 @@
-export const server = "http://172.20.10.4:8080/api/";
+export const server = "https://cg-backend-bmn4.onrender.com/api/";
+// export const server = "http://192.168.56.158:8080/api/";

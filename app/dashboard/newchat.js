@@ -85,9 +85,10 @@ const newchat = () => {
           >
             {/* <View className="bg-transparent border border-solid border-white rounded-2xl  relative mt-auto flex-row items-center justify-center focus:justify-start h-20 px-4 "> */}
             <TextInput
-              className="py-3 px-3 flex-1 text-white"
+              className="py-2 px-3 flex-1 text-white"
               placeholderTextColor={"white"}
               value={prompt}
+              multiline={true}
               placeholder="Write your message"
               onChangeText={(text) => {
                 setPrompt(text);

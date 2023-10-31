@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { Image } from "react-native";
+import { ActivityIndicator, Image } from "react-native";
 import { View } from "react-native";
 import { Text } from "react-native";
 import { TouchableOpacity } from "react-native";
@@ -13,18 +13,19 @@ const Button = ({
   textStyle,
   incolor,
   handlePress,
+  loading,
 }) => {
   const router = useRouter();
   return (
     <TouchableOpacity
       disabled={disabled}
-      onPress={() => {
-        if (handlePress) {
-          handlePress;
-          return;
-        }
-        if (link) router.push(`${link}`);
-      }}
+      onPress={
+        !handlePress
+          ? () => {
+              if (link) router.push(`${link}`);
+            }
+          : handlePress
+      }
       className={`bg-primary-color ${
         image ? "flex-row space-x-2" : ""
       } items-center rounded-2xl py-2 mt-10 ${style}`}
@@ -35,7 +36,11 @@ const Button = ({
         </View>
       )}
       <Text className={`text-white text-2xl font-bold ${textStyle}`}>
-        {text}
+        {loading ? (
+          <ActivityIndicator className="animate-spin mx-auto self-center" />
+        ) : (
+          text
+        )}
       </Text>
     </TouchableOpacity>
   );
