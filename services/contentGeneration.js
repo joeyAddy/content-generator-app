@@ -1,12 +1,15 @@
 import { useState } from "react";
 import axios from "axios";
 import { server } from "../constants/serverURL";
-import { OPENAI_API_KEY } from "@env";
+import { OPENAI_KEY } from "@env";
 
 const endpoint =
   "https://api.openai.com/v1/engines/text-davinci-003/completions";
 
 export const generateText = async (prompt) => {
+  console.log("====================================");
+  console.log(OPENAI_KEY);
+  console.log("====================================");
   let data = null;
   let error = null;
   try {
@@ -20,7 +23,7 @@ export const generateText = async (prompt) => {
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
+          Authorization: `Bearer ${OPENAI_KEY}`,
         },
       }
     );
