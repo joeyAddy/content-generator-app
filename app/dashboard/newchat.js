@@ -21,14 +21,13 @@ const image = Asset.fromModule(require("../../assets/bg.png")).uri;
 
 const newchat = () => {
   const router = useRouter();
-  const navigate = useNavigation();
 
   const params = useLocalSearchParams();
 
   const passedPrompt = String(params.prompt);
 
   const [prompt, setPrompt] = useState(
-    passedPrompt.trim() === "" ? "" : passedPrompt
+    passedPrompt.trim() === "" && passedPrompt !== undefined ? "" : passedPrompt
   );
 
   const [data, setData] = useState("");

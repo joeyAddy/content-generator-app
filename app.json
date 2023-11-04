@@ -10,6 +10,9 @@
       "eas": {
         "projectId": "3fd001de-32b8-4541-b457-e35e79961d8c"
       }
+    },
+    "android": {
+      "package": "com.joeydevs.contentgeneratingapp"
     }
   },
   "plugins": [

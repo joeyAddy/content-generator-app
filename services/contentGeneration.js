@@ -1,9 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 import { server } from "../constants/serverURL";
+import { OPENAI_API_KEY } from "@env";
 
-const apiKey = "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";
-// const endpoint = server + "chatgpt";
 const endpoint =
   "https://api.openai.com/v1/engines/text-davinci-003/completions";
 
@@ -21,7 +20,7 @@ export const generateText = async (prompt) => {
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
+          Authorization: `Bearer ${OPENAI_API_KEY}`,
         },
       }
     );
